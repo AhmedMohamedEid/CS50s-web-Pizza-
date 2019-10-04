@@ -1,0 +1,92 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+
+{% block title %}
+  My Cart
+{% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+
+  <div class="row justify-content-center mb-3 pb-3 mt-3 pt-3">
+    <div class="col-md-7 heading-section text-center ftco-animate">
+      <h2 class="mb-2">My Cart</h2>
+      <p class="flip"><span class="deg1"></span><span class="deg2"></span><span class="deg3"></span></p>
+
+    </div>
+  </div>
+
+	<table id="cart" class="table table-hover table-condensed">
+  	<thead>
+  	<tr>
+  		<th style="width:40%">Product</th>
+  		<th style="width:12%">Size</th>
+  		<th style="width:15%">Price</th>
+  		<th style="width:8%">Quantity</th>
+  		<th style="width:15%" class="text-center">Subtotal</th>
+  		<th style="width:10%"></th>
+  	</tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+      {% if order %}
+        <tr>
+          <td data-th="Product">
+      			<div class="row">
+      				<!-- <div class="col-sm-2 hidden-xs"><img src="http://placehold.it/100x100" alt="..." class="img-responsive"/></div> -->
+      				<div class="col-sm-10">
+      					<h5 class="nomargin">{{ order.item.name }}</h5>
+      					<!-- <p>Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet.</p> -->
+      				</div>
+      			</div>
+      		</td>
+          <td data-th="Size" >
+            {% if order.item.smPrice != 0.00 and order.item.lgPrice != 0.00 %}
+            <form method="post">
+              <select class="form-control form-control-sm" name="item_size">
+                <option value="1">Small</option>
+                <option value="1">large</option>
+              </select>
+            </form>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+      		<td data-th="Price">
+            ${{ order.price }}
+          </td>
+      		<td data-th="Quantity">
+      			<input type="number" class="form-control text-center" onchange="calc_subtotal(this,{{ order.price }},{{ order.id }})" value="{{ order.quantity }}">
+      		</td>
+      		<td data-th="Subtotal" class="text-center">{{ order.subtotal }}</td>
+      		<td class="actions" data-th="">
+      			<button class="btn btn-info btn-sm"><i class="fa fa-refresh"></i></button>
+      			<button class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i>X</button>
+      		</td>
+        </tr>
+    {% else %}
+      <tr>
+        <p>Empty</p>
+      </tr>
+    {% endif %}
+
+    {% endfor %}
+
+  </tbody>
+  <tfoot>
+  	<!-- <tr class="visible-xs">
+  		<td class="text-center"><strong>Total 1.99</strong></td>
+  	</tr> -->
+  	<tr>
+  		<td><a href="{% url 'our_menu' %}" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
+  		<td colspan="3" class="hidden-xs"></td>
+  		<td class="hidden-xs text-center"><strong>Total $<span id="total">{{ total.subtotal__sum }}</span></strong></td>
+  		<td><a href="#" class="btn btn-success btn-block">Checkout <i class="fa fa-angle-right"></i></a></td>
+  	</tr>
+  </tfoot>
+  </table>
+</div>
+
+{% endblock %}

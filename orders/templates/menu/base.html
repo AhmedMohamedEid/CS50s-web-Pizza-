@@ -6,6 +6,7 @@
     <title>Pizza - {% block title %}{% endblock %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="{% static 'images/pizza_icon.png' %}">
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
@@ -40,9 +41,9 @@
           </button>
         <div class="collapse navbar-collapse" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active"><a href="{% url 'index' %}" class="nav-link">Home</a></li>
-            <li class="nav-item"><a href="{% url 'our_menu' %}" class="nav-link">Menu</a></li>
-            <li class="nav-item"><a href="{% url 'mycart' %}" class="nav-link">My Cart</a></li>
+            <li class="nav-item {% if request.resolver_match.url_name == "index" %}active{% endif %}"><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+            <li class="nav-item {% if request.resolver_match.url_name == "our_menu" %}active{% endif %}"><a href="{% url 'our_menu' %}" class="nav-link">Menu</a></li>
+            <li class="nav-item {% if request.resolver_match.url_name == "mycart" %}active{% endif %}"><a href="{% url 'mycart' %}" class="nav-link">My Cart</a></li>
             <!-- <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
             <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
             <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
@@ -59,8 +60,8 @@
                 </div>
               </li>
             {% else %}
-              <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Login</a></li>
-              <li class="nav-item"><a href="{% url 'register' %}" class="nav-link">Register</a></li>
+              <li class="nav-item {% if request.resolver_match.url_name == "login" %}active{% endif %}"><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+              <li class="nav-item {% if request.resolver_match.url_name == "register" %}active{% endif %}"><a href="{% url 'register' %}" class="nav-link">Register</a></li>
             {% endif %}
 
 

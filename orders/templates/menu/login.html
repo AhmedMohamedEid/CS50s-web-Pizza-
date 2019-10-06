@@ -1,0 +1,33 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+
+{% block title %}
+  Login
+{% endblock %}
+
+{% block body %}
+
+
+<section class="ftco-section contact-section">
+  <div class="container mt-5">
+    <div class="row block-9">
+			<div class="col-md-1"></div>
+      <div class="col-md-6 ftco-animate" style="margin: 0px auto;">
+        <form action="{% url 'login' %}"  method="POST" class="contact-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <input type="text" class="form-control" name="username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <input type="submit" value="Login" class="btn btn-primary py-3 px-5">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

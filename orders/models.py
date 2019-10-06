@@ -57,6 +57,7 @@ class Items(models.Model):
     smPrice = models.DecimalField(max_digits=5, decimal_places=2)
     lgPrice = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     menuCateg = models.ForeignKey(menuCateg, blank=True, on_delete=models.CASCADE, related_name="categ_item")
+    image = models.ImageField(upload_to="images/items", default="pizza-1.jpg")
 
     def __str__(self):
         return ("{} small: {}$ and large: {}$ and Categ: {}".format(self.name, self.smPrice, self.lgPrice, self.menuCateg))

@@ -25,54 +25,6 @@
   </section>
 
   <section class="ftco-section">
-  	<!-- <div class="container">
-  		<div class="row justify-content-center mb-5 pb-3">
-        <div class="col-md-7 heading-section ftco-animate text-center">
-          <h2 class="mb-4">Our Menu</h2>
-          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-        </div>
-      </div>
-  	</div>
-  	<div class="container-wrap">
-  		<div class="row no-gutters d-flex">
-
-        {% for cat in menuCategs %}
-
-  			<div class="col-lg-4 d-flex ftco-animate">
-  				<div class="services-wrap d-flex">
-  					<a href="#" class="img" style="background-image: url({{ cat.image.url }});"></a>
-  					<div class="text p-4">
-  						<h3>{{ cat.name }}</h3>
-  						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-  						<p class="price"><a href="#" class="ml-2 btn btn-white btn-outline-white">More...</a></p>
-  					</div>
-  				</div>
-  			</div>
-        {% endfor %}
-
-  			<!-- <div class="col-lg-4 d-flex ftco-animate">
-  				<div class="services-wrap d-flex">
-  					<a href="#" class="img order-lg-last" style="background-image: url({% static 'images/pizza-5.jpg' %});"></a>
-  					<div class="text p-4">
-  						<h3>Salads</h3>
-  						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-  						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-  					</div>
-  				</div>
-  			</div>
-  			<div class="col-lg-4 d-flex ftco-animate">
-  				<div class="services-wrap d-flex">
-  					<a href="#" class="img order-lg-last" style="background-image: url({% static 'images/pizza-6.jpg' %});"></a>
-  					<div class="text p-4">
-  						<h3>Dinner Platters</h3>
-  						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-  						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-  					</div>
-  				</div>
-  			</div>
-
-  		</div>
-  	</div> -->
 
   	<div class="container">
   		<div class="row justify-content-center mb-5 pb-3 mt-5 pt-5">
@@ -86,7 +38,7 @@
         <div class="ftco-menu text-center">
           <div class="col-md-12 nav-link-wrap mb-5">
             <div class="nav ftco-animate nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-              <a class="nav-link active" id="v-pills-7-tab" data-toggle="pill" href="#v-pills-7" role="tab" aria-controls="v-pills-7" aria-selected="true">Pizza</a>
+              <!-- <a class="nav-link active" id="v-pills-7-tab" data-toggle="pill" href="#v-pills-7" role="tab" aria-controls="v-pills-7" aria-selected="true">Pizza</a> -->
               {% for cate in menuCategs %}
                 <a class="nav-link" id="v-pills-{{ cate.id }}-tab" data-toggle="pill" href="#v-pills-{{ cate.id }}" role="tab" aria-controls="v-pills-{{ cate.id }}" aria-selected="false">{{ cate.name }}</a>
               {% endfor %}
@@ -98,7 +50,7 @@
         <div class="col-md-12 d-flex align-items-center">
           <div class="tab-content ftco-animate" id="v-pills-tabContent">
 
-            <div class="tab-pane fade show active" id="v-pills-7" role="tabpanel" aria-labelledby="v-pills-7-tab">
+            <!-- <div class="tab-pane fade show active" id="v-pills-7" role="tabpanel" aria-labelledby="v-pills-7-tab">
               <div class="row">
                 <div class="col-md-6">
                   <h3 class="mb-4 text-center">Regular Pizza</h3>
@@ -147,7 +99,7 @@
                 </div>
 
               </div>
-            </div>
+            </div> -->
 
             {% for cate in menuCategs %}
             <div class="tab-pane fade" id="v-pills-{{ cate.id }}" role="tabpanel" aria-labelledby="v-pills-{{ cate.id }}-tab">
@@ -159,7 +111,7 @@
 
                 <div class="col-md-3 text-center">
                   <div class="menu-wrap">
-                    <a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pizza-2.jpg' %});"></a>
+                    <a href="#" class="menu-img img mb-4" style="background-image: url({{ item.image.url }});"></a>
                     <div class="text">
                       <h3><a href="#">{{ item.name }}</a></h3>
                       <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>

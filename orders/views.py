@@ -4,19 +4,20 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Sum
+import math
 import json
+
+
+import stripe
+stripe.api_key = "sk_test_VzjYazjHLjiFmX5MmniSHUVA00Z2zoKNzk"
 
 
 from .models import ItemPricing, Topping, MenuItems, menuCateg, Items, Orders
 # Create your views here.
 def index(request):
-    if not request.user.is_authenticated:
-        return render(request, "menu/login.html")
-    else:
-        context = getMenuData(request)
-        return render(request, "menu/index.html", context)
-    # return HttpResponse("PORJECT 2")
-
+    context = getMenuData(request)
+    return render(request, "menu/index.html", context)
+    
 
 def register_page(request):
     if request.method == "POST":
@@ -26,7 +27,15 @@ def register_page(request):
         email = request.POST["email"]
         password = request.POST["password"]
         user = User.objects.create_user(username=username, password=password,email=email,first_name=firstname,last_name=lastname, is_staff=True)
-        print(user)
+
+        # Create new User in Strip with API
+        stripe.Customer.create(
+            description="Customer for "+ email,
+            name = firstname +" "+lastname,
+            email = email,
+            source="tok_mastercard" # obtained with Stripe.js
+        )
+
         if user:
             user.save()
             return HttpResponseRedirect(reverse("index"))
@@ -34,16 +43,18 @@ def register_page(request):
         return render(request, "menu/register.html")
 
 def login_page(request):
-    username = request.POST["username"]
-    password = request.POST["password"]
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+
+            return render(request, "menu/login.html", {"message":"Invalid credentials."})
     else:
-
-        return render(request, "menu/login.html", {"message":"Invalid credentials."})
-
+        return render(request, "menu/login.html")
 def logout_page(request):
     logout(request)
     return render(request, "menu/login.html",)
@@ -81,17 +92,13 @@ def our_menu(request):
     return render(request, "menu/menu.html", context)
 
 
-myShoppingCart = {}
-
 
 def cart(request):
+
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+
     orders = Orders.objects.filter(customer=request.user, finished=False)
-    # pricelist = []
-    # for order in orders:
-    #     print(order)
-    #     # items = Items.objects.get(pk=order.item])
-    #     # print(items)
-    #     # order['item']
     context = {
         "orders" : orders,
         "total" : Orders.objects.filter(customer=request.user, finished=False).aggregate(Sum('subtotal')),
@@ -103,7 +110,7 @@ def cart(request):
 def calc_total(request):
     if not request.is_ajax: return { "success": False }
     if not request.user.is_authenticated:
-        return render(request, "menu/login.html")
+        return HttpResponseRedirect(reverse("login"))
 
     items = request.POST['items']
     items = json.loads(items)
@@ -123,11 +130,34 @@ def calc_total(request):
     return JsonResponse({"success":True, "data":data })
 
 
+def changePrice(request):
+    if not request.is_ajax: return { "success": False }
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+
+    items = request.POST['items']
+    items = json.loads(items)
+
+    date = {}
+    for item in items:
+        order = Orders.objects.get(pk=int(item['id']))
+        print(item['newPrice'])
+        order.price = float(item['newPrice'])
+        order.subtotal = order.price * order.quantity
+        order.save()
+
+        total = Orders.objects.filter(customer=request.user, finished=False).aggregate(Sum('subtotal'))
+        data = {'item_id': item['id'], "quantity":order.quantity, "price":order.price, "subtotal":order.subtotal,"total":total }
+
+    print(data)
+    return JsonResponse({"success":True, "data":data })
+
+
 def add2chart(request):
     if not request.is_ajax: return { "success":False }
 
     if not request.user.is_authenticated:
-        return render(request, "menu/login.html")
+        return HttpResponseRedirect(reverse("login"))
 
     items = request.POST['items']
     items = json.loads(items)
@@ -158,3 +188,68 @@ def add2chart(request):
         print(get_item)
 
     return JsonResponse({"success":True, })
+
+def creatStripeCustomer(request):
+
+    # Create new User in Strip with API
+    stripe.Customer.create(
+        description="Customer for "+ request.user.email,
+        name = request.user.first_name +" "+request.user.last_name,
+        email = request.user.email,
+        source="tok_mastercard" # obtained with Stripe.js
+    )
+
+    return True
+def checkout(request):
+
+    orders = Orders.objects.filter(customer=request.user, finished=False)
+
+    total = Orders.objects.filter(customer=request.user, finished=False).aggregate(Sum('subtotal'))
+
+    customers =  stripe.Customer.list(limit=3)
+    invoice_item = []
+
+    for customer in customers["data"]:
+
+        if customer["email"] == request.user.email:
+
+            for order in orders:
+                item_name = order.item.name
+                price_unit = order.price
+                quantity = order.quantity
+                amount = order.subtotal
+
+                item = stripe.InvoiceItem.create(
+                    customer = customer["id"],
+                    description = item_name,
+                    # amount = int(amount*100),
+                    quantity = quantity ,
+                    unit_amount_decimal = price_unit*100 , # Decimal Number
+                    currency = "usd",
+
+                )
+                invoice_item.append(item)
+                print(item)
+
+                if item:
+                    order.finished = True
+                    order.save()
+
+            invoices = stripe.Invoice.create(
+                customer = customer["id"],
+                collection_method='send_invoice',
+                days_until_due=30,
+                auto_advance=True
+
+            )
+            sendInvoiceViaEmail(invoices["id"])
+            print(invoices["id"])
+
+        else:
+            print("Your Create A new user in stripe platform")
+            creatStripeCustomer(request)
+
+    return HttpResponseRedirect(reverse("mycart"))
+
+def sendInvoiceViaEmail(invoice_id):
+    return stripe.Invoice.send_invoice(invoice_id)

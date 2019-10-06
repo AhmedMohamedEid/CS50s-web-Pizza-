@@ -296,6 +296,18 @@
 
 })(jQuery);
 
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // document.querySelector("#").
+  document.getElementById("v-pills-tab").firstElementChild.className = "nav-link active";
+  document.getElementById("v-pills-tabContent").firstElementChild.className = "tab-pane fade show active";
+
+});
+
+ // id =  v-pills-tab
+
+
 var csrftoken = getCookie('csrftoken');
 
 function add2mycart(item_id) {
@@ -331,12 +343,66 @@ function add2mycart(item_id) {
 };
 
 
-//
-// document.addEventListener("DOMContentLoaded", () => {
-//
-//   // alert(window.location.href);
-//
-// });
+function changeTotal(data, element) {
+  // console.log(data);
+/*
+  Data Example:
+    {data{
+      item_id: 6
+      quantity: "4"
+      subtotal: 33
+      total:
+        subtotal__sum: 85
+        __proto__: Object
+        __proto__: Object
+      }
+    success: true
+    __proto__: Object}
+*/
+
+  total = data.data.total.subtotal__sum;
+  element.parentElement.parentElement.parentElement.children[2].innerHTML = "$"+data.data.price;
+  element.parentElement.parentElement.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = "$"+data.data.subtotal;
+  // element.parentElement.parentElement.parentElement.innerHTML = data.price;
+
+  document.querySelector("#total").innerHTML = total;
+};
+
+
+function changePrice(element, item_id){
+    newPrice = element.value
+    price = [];
+    var item = {
+      "id" : item_id,
+      "newPrice" : newPrice,
+    };
+    price.push(item);
+
+    const data = new FormData();
+    data.append('csrfmiddlewaretoken', csrftoken);
+    data.append('items', JSON.stringify(price));
+
+    // ajax request
+    const request = new XMLHttpRequest();
+    request.open('POST', '/changePrice');
+    request.send(data);
+
+
+    // After request completes
+    request.onload = () => {
+        const data = JSON.parse(request.responseText);
+        if (data.success){
+          changeTotal(data, element);
+          // console.log(data);
+        }
+    };
+
+    // prevernt reload
+    return false;
+
+};
+
+
 function showTotal(data) {
   // console.log(data);
 /*
@@ -396,7 +462,25 @@ function calc_subtotal(element, price, item_id){
   // alert(item_count+" "+subtotal);
 };
 
+function checkout() {
 
+  // ajax request
+  const request = new XMLHttpRequest();
+  request.open('POST', '/checkout');
+  request.send();
+
+  // After request completes
+  request.onload = () => {
+      const data = JSON.parse(request.responseText);
+      if (data.success)
+          // showTotal(data);
+          alert("Done");
+  };
+
+  // prevernt reload
+  return false;
+  // alert(item_count+" "+subtotal);
+};
 
 // Get csrf token
 function getCookie(name) {

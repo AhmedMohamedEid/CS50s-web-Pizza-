@@ -35,9 +35,9 @@
         <tr>
           <td data-th="Product">
       			<div class="row">
-      				<!-- <div class="col-sm-2 hidden-xs"><img src="http://placehold.it/100x100" alt="..." class="img-responsive"/></div> -->
-      				<div class="col-sm-10">
-      					<h5 class="nomargin">{{ order.item.name }}</h5>
+      				<div class="col-sm-3 hidden-xs"><img src="{{ order.item.image.url }}" width="60px" alt="{{ order.item.name }}" title="{{ order.item.name }}" class="img-responsive"/></div>
+      				<div class="col-sm-9">
+      					<h6 class="nomargin">{{ order.item.name }}</h6>
       					<!-- <p>Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet.</p> -->
       				</div>
       			</div>
@@ -45,16 +45,16 @@
           <td data-th="Size" >
             {% if order.item.smPrice != 0.00 and order.item.lgPrice != 0.00 %}
             <form method="post">
-              <select class="form-control form-control-sm" name="item_size">
-                <option value="1">Small</option>
-                <option value="1">large</option>
+              <select class="form-control form-control-sm" onchange="changePrice(this,{{ order.id }})" name="item_size">
+                <option value="{{order.item.smPrice}}">Small</option>
+                <option value="{{order.item.lgPrice}}">large</option>
               </select>
             </form>
             {% else %}
             -
             {% endif %}
           </td>
-      		<td data-th="Price">
+      		<td data-th="Price" class="price">
             ${{ order.price }}
           </td>
       		<td data-th="Quantity">
@@ -62,7 +62,7 @@
       		</td>
       		<td data-th="Subtotal" class="text-center">{{ order.subtotal }}</td>
       		<td class="actions" data-th="">
-      			<button class="btn btn-info btn-sm"><i class="fa fa-refresh"></i></button>
+      			<!-- <button class="btn btn-info btn-sm"><i class="fa fa-refresh"></i></button> -->
       			<button class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i>X</button>
       		</td>
         </tr>
@@ -83,7 +83,7 @@
   		<td><a href="{% url 'our_menu' %}" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
   		<td colspan="3" class="hidden-xs"></td>
   		<td class="hidden-xs text-center"><strong>Total $<span id="total">{{ total.subtotal__sum }}</span></strong></td>
-  		<td><a href="#" class="btn btn-success btn-block">Checkout <i class="fa fa-angle-right"></i></a></td>
+  		<td><a href="{% url 'checkout' %}" class="btn btn-success btn-block">Checkout <i class="fa fa-angle-right"></i></a></td>
   	</tr>
   </tfoot>
   </table>
